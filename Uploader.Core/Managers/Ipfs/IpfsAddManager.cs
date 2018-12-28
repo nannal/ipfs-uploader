@@ -22,19 +22,19 @@ namespace Uploader.Core.Managers.Ipfs
                 currentFileItem.IpfsHash = null;
                 currentFileItem.IpfsProcess.StartProcessDateTime();
 
-                // Send to ipfs HTTP api and return hash from ipfs
+                // Send to ipfs and return hash from ipfs
                 var processStartInfo = new ProcessStartInfo();
-                processStartInfo.FileName = "curl";
+                processStartInfo.FileName = "ipfs";
                 if (IpfsSettings.Instance.OnlyHash)
-                    processStartInfo.Arguments = $" -F file=@{Path.GetFileName(currentFileItem.OutputFilePath)} http://192.168.2.104:5001/api/v0/add?only-hash=true";
+                    processStartInfo.Arguments = $"add --only-hash {Path.GetFileName(currentFileItem.OutputFilePath)}";
                 else
-                    processStartInfo.Arguments = $" -F file=@{Path.GetFileName(currentFileItem.OutputFilePath)} http://192.168.2.104:5001/api/v0/add";
+                    processStartInfo.Arguments = $"add {Path.GetFileName(currentFileItem.OutputFilePath)}";
 
                 if(IpfsSettings.Instance.VideoAndSpriteTrickleDag)
                     if(currentFileItem.TypeFile == TypeFile.SourceVideo ||
                         currentFileItem.TypeFile == TypeFile.EncodedVideo ||
                         currentFileItem.TypeFile == TypeFile.SpriteVideo)
-                        processStartInfo.Arguments = $" -F file=@{Path.GetFileName(currentFileItem.OutputFilePath)} http://192.168.2.104:5001/api/v0/add?trickle=true";
+                        processStartInfo.Arguments = $"add -t {Path.GetFileName(currentFileItem.OutputFilePath)}";
 
                 processStartInfo.RedirectStandardOutput = true;
                 processStartInfo.RedirectStandardError = true;
@@ -105,9 +105,9 @@ namespace Uploader.Core.Managers.Ipfs
 
             LogManager.AddIpfsMessage(LogLevel.Debug, Path.GetFileName(currentFileItem.OutputFilePath) + " : " + output, "DEBUG");
 
-            if (output.StartsWith('{'))
+            if (output.StartsWith("added "))
             {
-                currentFileItem.IpfsHash = output.Split('"')[7];
+                currentFileItem.IpfsHash = output.Split(' ')[1];
             }
         }
     }
