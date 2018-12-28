@@ -22,19 +22,19 @@ namespace Uploader.Core.Managers.Ipfs
                 currentFileItem.IpfsHash = null;
                 currentFileItem.IpfsProcess.StartProcessDateTime();
 
-                // Send to ipfs and return hash from ipfs
+                // Send to ipfs HTTP api and return hash from ipfs
                 var processStartInfo = new ProcessStartInfo();
-                processStartInfo.FileName = "ipfs";
+                processStartInfo.FileName = "curl";
                 if (IpfsSettings.Instance.OnlyHash)
-                    processStartInfo.Arguments = $"add --only-hash {Path.GetFileName(currentFileItem.OutputFilePath)}";
+                    processStartInfo.Arguments = $" -F file=@{Path.GetFileName(currentFileItem.OutputFilePath)} http://192.168.2.104:5001/api/v0/add?only-hash=true";
                 else
-                    processStartInfo.Arguments = $"add {Path.GetFileName(currentFileItem.OutputFilePath)}";
+                    processStartInfo.Arguments = $" -F file=@{Path.GetFileName(currentFileItem.OutputFilePath)} http://192.168.2.104:5001/api/v0/add";
 
-                if(IpfsSettings.Instance.VideoAndSpriteTrickleDag)                
-                    if(currentFileItem.TypeFile == TypeFile.SourceVideo || 
-                        currentFileItem.TypeFile == TypeFile.EncodedVideo || 
+                if(IpfsSettings.Instance.VideoAndSpriteTrickleDag)
+                    if(currentFileItem.TypeFile == TypeFile.SourceVideo ||
+                        currentFileItem.TypeFile == TypeFile.EncodedVideo ||
                         currentFileItem.TypeFile == TypeFile.SpriteVideo)
-                        processStartInfo.Arguments = $"add -t {Path.GetFileName(currentFileItem.OutputFilePath)}";
+                        processStartInfo.Arguments = $" -F file=@{Path.GetFileName(currentFileItem.OutputFilePath)} http://192.168.2.104:5001/api/v0/add?trickle=true";
 
                 processStartInfo.RedirectStandardOutput = true;
                 processStartInfo.RedirectStandardError = true;
@@ -105,9 +105,9 @@ namespace Uploader.Core.Managers.Ipfs
 
             LogManager.AddIpfsMessage(LogLevel.Debug, Path.GetFileName(currentFileItem.OutputFilePath) + " : " + output, "DEBUG");
 
-            if (output.StartsWith("added "))
+            if (output.StartsWith('{"Name'))
             {
-                currentFileItem.IpfsHash = output.Split(' ')[1];
+                currentFileItem.IpfsHash = output.Split('"')[7];
             }
         }
     }
