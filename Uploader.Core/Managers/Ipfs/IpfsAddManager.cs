@@ -105,7 +105,7 @@ namespace Uploader.Core.Managers.Ipfs
 
             LogManager.AddIpfsMessage(LogLevel.Debug, Path.GetFileName(currentFileItem.OutputFilePath) + " : " + output, "DEBUG");
 
-            if (output.StartsWith("added "))
+            if (output.StartsWith("{"))
             {
                 currentFileItem.IpfsHash = output.Split(':')[2].Split('"')[0];
             }

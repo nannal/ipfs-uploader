@@ -11,7 +11,6 @@ namespace Uploader.Core.Test
             bool success2 = CheckManager.CheckFfprobe();
             bool success3 = CheckManager.CheckImageMagickComposite();
             bool success4 = CheckManager.CheckImageMagickConvert();
-            bool success5 = CheckManager.CheckAndLaunchIpfsDaemon();
         }
     }
 }
