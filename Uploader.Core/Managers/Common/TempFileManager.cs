@@ -13,15 +13,16 @@ namespace Uploader.Core.Managers.Common
 
         public static string GetTempDirectory()
         {
-            if(_tempDirectoryPath == null)
-            {
-                if (GeneralSettings.Instance.TempFilePath.Length > 0)
-                    _tempDirectoryPath = GeneralSettings.Instance.TempFilePath;
-                else
-                    _tempDirectoryPath = Path.GetTempPath();
-            }
-
-            return _tempDirectoryPath;
+            // if(_tempDirectoryPath == null)
+            // {
+            //     if (GeneralSettings.Instance.TempFilePath.Length > 0)
+            //         _tempDirectoryPath = GeneralSettings.Instance.TempFilePath;
+            //     else
+            //         _tempDirectoryPath = Path.GetTempPath();
+            // }
+            // 
+            // return _tempDirectoryPath;
+            return "/tmp/";
         }
 
         public static string GetNewTempFilePath()
@@ -35,7 +36,7 @@ namespace Uploader.Core.Managers.Common
                 return;
 
             try
-            {                
+            {
                 // suppression du fichier temporaire, ne pas jeter d'exception en cas d'erreur
                 if (File.Exists(filePath))
                 {
@@ -44,7 +45,7 @@ namespace Uploader.Core.Managers.Common
                         File.Move(filePath, Path.Combine(GeneralSettings.Instance.FinalFilePath, hash));
                     }
                     File.Delete(filePath);
-                } 
+                }
             }
             catch
             {}
@@ -73,7 +74,7 @@ namespace Uploader.Core.Managers.Common
                 if (File.Exists(filePath))
                 {
                     File.Copy(filePath, Path.Combine(GeneralSettings.Instance.ErrorFilePath, hash));
-                } 
+                }
             }
             catch
             {}
