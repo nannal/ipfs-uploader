@@ -24,17 +24,17 @@ namespace Uploader.Core.Managers.Ipfs
 
                 // Send to ipfs and return hash from ipfs
                 var processStartInfo = new ProcessStartInfo();
-                processStartInfo.FileName = "ipfs";
+                processStartInfo.FileName = "curl";
                 if (IpfsSettings.Instance.OnlyHash)
-                    processStartInfo.Arguments = $"add --only-hash {Path.GetFileName(currentFileItem.OutputFilePath)}";
+                    processStartInfo.Arguments = $"-sS -F 'file=@{Path.GetFileName(currentFileItem.OutputFilePath)}' http://ipfs:5001/api/v0/add?only-hash=true";
                 else
-                    processStartInfo.Arguments = $"add {Path.GetFileName(currentFileItem.OutputFilePath)}";
+                    processStartInfo.Arguments = $"-sS -F 'file=@{Path.GetFileName(currentFileItem.OutputFilePath)}' http://ipfs:5001/api/v0/add";
 
                 if(IpfsSettings.Instance.VideoAndSpriteTrickleDag)
                     if(currentFileItem.TypeFile == TypeFile.SourceVideo ||
                         currentFileItem.TypeFile == TypeFile.EncodedVideo ||
                         currentFileItem.TypeFile == TypeFile.SpriteVideo)
-                        processStartInfo.Arguments = $"add -t {Path.GetFileName(currentFileItem.OutputFilePath)}";
+                        processStartInfo.Arguments = $"-sS -F 'file=@{Path.GetFileName(currentFileItem.OutputFilePath)}' http://ipfs:5001/api/v0/add?trickle=true";
 
                 processStartInfo.RedirectStandardOutput = true;
                 processStartInfo.RedirectStandardError = true;
@@ -107,7 +107,7 @@ namespace Uploader.Core.Managers.Ipfs
 
             if (output.StartsWith("added "))
             {
-                currentFileItem.IpfsHash = output.Split(' ')[1];
+                currentFileItem.IpfsHash = output.Split(':')[2].Split('"')[0];
             }
         }
     }
