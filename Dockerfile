@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.0-runtime
+FROM microsoft/dotnet:2.0-sdk
 LABEL "project.home"="https://github.com/nannal/ipfs-uploader"
 RUN apt-get update -y
 RUN apt-get install ffmpeg imagemagick git -y
